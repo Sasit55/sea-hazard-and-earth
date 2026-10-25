@@ -9,10 +9,10 @@
   <!-- Three.js & Globe.gl -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/globe.gl@2.32.3/dist/globe.gl.min.js"></script>
-  <!-- Google Fonts: Inter & Outfit -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -27,9 +27,6 @@
       background-color: #030712;
       font-family: 'Inter', sans-serif;
       color: #f1f5f9;
-    }
-    h1, h2, h3, .font-heading {
-      font-family: 'Outfit', sans-serif;
     }
     #globe-canvas {
       width: 100vw;
@@ -76,13 +73,13 @@
         </svg>
       </div>
       <div>
-        <h1 class="text-sm font-bold tracking-wide text-white flex items-center gap-2 font-heading">
+        <h1 class="text-sm font-bold tracking-wide text-white flex items-center gap-2">
           Global 3D Earth Hazard Monitor
           <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5"></span> USGS Live Feed
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5"></span> USGS Live
           </span>
         </h1>
-        <p class="text-[11px] text-slate-400">Satellite Imagery • Tectonic Faults • Global Climate Telemetry</p>
+        <p class="text-[11px] text-slate-400">Satellite Imagery • Tectonic Faults • Global Climate</p>
       </div>
     </div>
 
@@ -93,15 +90,15 @@
         <span id="stat-mouse-coords" class="font-mono text-cyan-400 font-bold">Hover on Globe</span>
       </div>
       <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Global Quakes:</span>
-        <span id="stat-quake-count" class="font-bold text-amber-400">-- events</span>
+        <span class="text-slate-400">Quakes:</span>
+        <span id="stat-quake-count" class="font-bold text-amber-400">--</span>
       </div>
       <div class="flex items-center space-x-2">
         <span class="text-slate-400">Max Magnitude:</span>
         <span id="stat-max-mag" class="font-bold text-rose-400">-- M</span>
       </div>
       <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Earth Rotation:</span>
+        <span class="text-slate-400">Rotation:</span>
         <span id="stat-spin" class="font-bold text-sky-400">Auto</span>
       </div>
     </div>
@@ -114,9 +111,9 @@
       </button>
       <button onclick="toggleSidebar()" class="px-3 py-1.5 text-xs rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-        <span>Telemetry Panel</span>
+        <span>Telemetry</span>
       </button>
-      <button onclick="openModal()" class="px-3 py-1.5 text-xs rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-medium shadow-md transition font-heading">
+      <button onclick="openModal()" class="px-3 py-1.5 text-xs rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-medium shadow-md transition">
         Portfolio Info
       </button>
     </div>
@@ -126,10 +123,10 @@
   <aside id="sidebar" class="absolute top-16 left-3 bottom-3 w-80 z-20 glass-hud rounded-2xl flex flex-col transition-all duration-300 transform translate-x-0">
     <div class="flex border-b border-slate-800 p-2 gap-1 text-xs">
       <button id="tab-btn-quakes" onclick="switchTab('quakes')" class="flex-1 py-2 rounded-xl font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 transition text-center">
-        Live Earthquakes (<span id="tab-count-quake">0</span>)
+        Earthquakes (<span id="tab-count-quake">0</span>)
       </button>
       <button id="tab-btn-cities" onclick="switchTab('cities')" class="flex-1 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center">
-        Global Weather
+        Weather
       </button>
     </div>
 
@@ -137,24 +134,24 @@
     <div id="quake-filter-box" class="p-2.5 border-b border-slate-800 space-y-2">
       <div class="flex gap-2">
         <select id="mag-filter" onchange="filterQuakes()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500">
-          <option value="all">All Sizes (M 2.5+)</option>
+          <option value="all">All Magnitudes (M 2.5+)</option>
           <option value="4.5" selected>Notable Only (M 4.5+)</option>
           <option value="5.5">Moderate (M 5.5+)</option>
-          <option value="6.5">Strong (M 6.5+)</option>
+          <option value="6.5">Major (M 6.5+)</option>
         </select>
         <button onclick="fetchQuakeData()" title="Refresh USGS Data" class="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         </button>
       </div>
       <div class="text-[11px] text-slate-400 flex justify-between">
-        <span>Source: USGS Real-time GeoJSON</span>
+        <span>Source: USGS GeoJSON Feed</span>
         <span id="last-update-time">--:--:--</span>
       </div>
     </div>
 
     <!-- Earthquakes List -->
     <div id="quakes-panel" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
-      <div class="text-center py-8 text-xs text-slate-400">Connecting to USGS satellite data...</div>
+      <div class="text-center py-8 text-xs text-slate-400">Loading satellite telemetry...</div>
     </div>
 
     <!-- Weather List -->
@@ -169,7 +166,7 @@
       <button onclick="togglePanel('layers-body', 'layers-arrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between bg-slate-900/60 hover:bg-slate-800 transition text-left">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-          <span class="text-xs font-bold text-slate-200">Layer Visibility</span>
+          <span class="text-xs font-bold text-slate-200">Layer Options</span>
         </div>
         <svg id="layers-arrow" class="w-3.5 h-3.5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </button>
@@ -177,20 +174,20 @@
       <div id="layers-body" class="p-3 space-y-2.5 transition-all duration-300">
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-countries" checked onchange="updateGlobeLayers()" class="rounded accent-sky-500 w-3.5 h-3.5">
-          <span>Country Labels (Clean Typography)</span>
+          <span>Country Labels (Clean English)</span>
         </label>
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-plates" checked onchange="updateGlobeLayers()" class="rounded accent-orange-500 w-3.5 h-3.5">
-          <span>Tectonic Fault Lines (Orange)</span>
+          <span>Tectonic Fault Lines</span>
         </label>
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-graticules" checked onchange="updateGlobeLayers()" class="rounded accent-indigo-500 w-3.5 h-3.5">
-          <span>Equator & Tropic Parallels</span>
+          <span>Equator & Tropic Lines</span>
         </label>
         <div class="pt-1.5 border-t border-slate-800">
           <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
             <input type="checkbox" id="chk-quakes" checked onchange="updateGlobeLayers()" class="rounded accent-rose-500 w-3.5 h-3.5">
-            <span>Live Earthquake Markers (USGS)</span>
+            <span>Earthquake Markers (USGS)</span>
           </label>
         </div>
       </div>
@@ -201,27 +198,27 @@
       <button onclick="togglePanel('presets-body', 'presets-arrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between bg-slate-900/60 hover:bg-slate-800 transition text-left">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-          <span class="text-xs font-bold text-slate-200">Region Fly-To Presets</span>
+          <span class="text-xs font-bold text-slate-200">Region Presets</span>
         </div>
         <svg id="presets-arrow" class="w-3.5 h-3.5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </button>
 
       <div id="presets-body" class="p-2 space-y-1 transition-all duration-300">
         <button onclick="flyToLocation(13.75, 100.5, 1.4)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇹🇭 Southeast Asia (ASEAN)</span>
+          <span>🇹🇭 Southeast Asia</span>
           <span class="text-[10px] text-cyan-400">13.8°N, 100.5°E</span>
         </button>
         <button onclick="flyToLocation(-6.2, 106.8, 1.5)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇮🇩 Indonesia (Sunda Arc)</span>
+          <span>🇮🇩 Indonesia Arc</span>
           <span class="text-[10px] text-cyan-400">6.2°S, 106.8°E</span>
         </button>
         <button onclick="flyToLocation(35.68, 139.69, 1.4)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇯🇵 Japan (Ring of Fire)</span>
+          <span>🇯🇵 Japan Arc</span>
           <span class="text-[10px] text-cyan-400">35.7°N, 139.7°E</span>
         </button>
         <button onclick="flyToLocation(10.0, 110.0, 2.3)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🌐 Global Space Perspective</span>
-          <span class="text-[10px] text-sky-400">Orbit View</span>
+          <span>🌐 Global Orbit View</span>
+          <span class="text-[10px] text-sky-400">Orbit</span>
         </button>
       </div>
     </div>
@@ -229,9 +226,9 @@
     <!-- Mouse Controls Info -->
     <div class="glass-hud p-3 rounded-xl border border-slate-700/60 text-[11px] text-slate-400 space-y-1">
       <div class="font-bold text-slate-200 flex items-center gap-1">
-        <span>Globe Navigation:</span>
+        <span>Controls:</span>
       </div>
-      <div>• <b>Left-Click & Drag:</b> Rotate 360°</div>
+      <div>• <b>Left-Click Drag:</b> Rotate 360°</div>
       <div>• <b>Scroll Wheel:</b> Zoom in & out</div>
       <div>• <b>Hover Pointer:</b> Live Lat / Lon readout</div>
     </div>
@@ -245,21 +242,20 @@
       <div class="flex items-center space-x-3 mb-4">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-rose-500 flex items-center justify-center font-bold text-white shadow-lg">TCAS</div>
         <div>
-          <h2 class="text-base font-bold text-white font-heading">Global 3D Earth Hazard & Geophysical Monitor</h2>
+          <h2 class="text-base font-bold text-white">Global 3D Earth Hazard Monitor</h2>
           <p class="text-xs text-slate-400">Real-Time Geoinformatics & Seismic Analysis Web App</p>
         </div>
       </div>
       <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
         <p><strong class="text-white">Project Overview:</strong> An interactive 3D virtual globe engineered with WebGL to simulate planetary geophysics, tectonic plate dynamics, and real-time natural hazards. Directly integrated with open scientific APIs to provide live telemetry without requiring backend server infrastructure.</p>
         <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1.5">
-          <div class="font-bold text-sky-400">Core Technologies & Datasets:</div>
+          <div class="font-bold text-sky-400">Core Technologies:</div>
           <div>• <strong>3D Engine:</strong> Three.js & Globe.gl WebGL Rendering</div>
-          <div>• <strong>Live Seismic Feed:</strong> USGS Real-time GeoJSON API (100% Free)</div>
-          <div>• <strong>Global Atmospheric Feed:</strong> Open-Meteo REST API</div>
-          <div>• <strong>Tectonic Plate Faults:</strong> PB2002 Global Plate Boundary Dataset</div>
-          <div>• <strong>UI / Styling:</strong> Modern Cyber Glassmorphism HUD (Tailwind CSS)</div>
+          <div>• <strong>Live Seismic Feed:</strong> USGS Real-time GeoJSON API</div>
+          <div>• <strong>Weather Data:</strong> Open-Meteo REST API</div>
+          <div>• <strong>Plate Boundaries:</strong> PB2002 Global Plate Boundary Dataset</div>
         </div>
-        <p class="text-slate-400">Designed for university admission portfolios in Computer Science, Software Engineering, and Geoinformatics (GIS).</p>
+        <p class="text-slate-400">Designed for university admission portfolios in Computer Science, Software Engineering, and Geoinformatics.</p>
       </div>
       <div class="mt-6 flex justify-end">
         <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200">Close</button>
@@ -274,7 +270,7 @@
     let weatherData = [];
     let tectonicPlatesData = null;
 
-    // Clean English Country Labels (High aesthetic quality, no clutter)
+    // Clean English Labels (Pure ASCII - No ????? error)
     const countryLabels = [
       { name: "THAILAND", lat: 15.87, lon: 100.99, size: 0.9, color: '#38bdf8' },
       { name: "MYANMAR", lat: 21.91, lon: 95.95, size: 0.8, color: '#f1f5f9' },
@@ -289,15 +285,11 @@
       { name: "CHINA", lat: 35.86, lon: 104.19, size: 1.0, color: '#f1f5f9' },
       { name: "INDIA", lat: 20.59, lon: 78.96, size: 0.95, color: '#f1f5f9' },
       { name: "AUSTRALIA", lat: -25.27, lon: 133.77, size: 0.95, color: '#f1f5f9' },
-      { name: "UNITED STATES", lat: 37.09, lon: -95.71, size: 0.95, color: '#f1f5f9' },
-      { name: "UNITED KINGDOM", lat: 55.37, lon: -3.43, size: 0.85, color: '#f1f5f9' }
+      { name: "UNITED STATES", lat: 37.09, lon: -95.71, size: 0.95, color: '#f1f5f9' }
     ];
 
-    // Major Cities for Weather Telemetry
     const citiesList = [
       { name: "Bangkok", country: "Thailand", lat: 13.75, lon: 100.51 },
-      { name: "Chiang Mai", country: "Thailand", lat: 18.79, lon: 98.98 },
-      { name: "Phuket", country: "Thailand", lat: 7.88, lon: 98.39 },
       { name: "Jakarta", country: "Indonesia", lat: -6.20, lon: 106.84 },
       { name: "Kuala Lumpur", country: "Malaysia", lat: 3.13, lon: 101.68 },
       { name: "Singapore", country: "Singapore", lat: 1.35, lon: 103.81 },
@@ -309,7 +301,6 @@
       { name: "New York", country: "United States", lat: 40.71, lon: -74.00 }
     ];
 
-    // Graticules (Equator, Tropics)
     function generateGraticules() {
       const paths = [];
       const parallels = [
@@ -323,7 +314,7 @@
         for (let lng = -180; lng <= 180; lng += 4) {
           coords.push([p.lat, lng]);
         }
-        paths.push({ coords, color: p.color, weight: p.weight, name: p.name });
+        paths.push({ coords, color: p.color, weight: p.weight });
       });
 
       return paths;
@@ -331,7 +322,7 @@
 
     const graticuleLines = generateGraticules();
 
-    // 1. Initialize 3D Globe with Clean English Labels & Blue Marble Satellite
+    // 1. Initialize 3D Globe with Clean Labels
     globe = Globe()(globeContainer)
       .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
@@ -339,7 +330,7 @@
       .showAtmosphere(true)
       .atmosphereColor('#38bdf8')
       .atmosphereAltitude(0.18)
-      // Clean English 3D Text Labels
+      // Labels (Guaranteed Clean Text)
       .labelsData([])
       .labelText(d => d.text)
       .labelSize(d => d.size)
@@ -350,7 +341,7 @@
       .labelLng(d => d.lon)
       .labelResolution(3)
       .onLabelClick(d => flyToLocation(d.lat, d.lon, 1.4))
-      // Seismic Points
+      // Quake Points
       .pointsData([])
       .pointLat(d => d.lat)
       .pointLng(d => d.lon)
@@ -359,19 +350,18 @@
       .pointRadius(d => d.radius)
       .pointLabel(d => d.label)
       .onPointClick(d => flyToLocation(d.lat, d.lon, 1.4))
-      // Seismic Shockwave Rings
+      // Shockwave Rings
       .ringsData([])
       .ringColor(d => d.color)
       .ringMaxRadius(d => d.maxR)
       .ringPropagationSpeed(1.5)
       .ringRepeatPeriod(1000)
-      // Fault Lines & Graticules
+      // Paths
       .pathsData([])
       .pathPoints(d => d.coords)
       .pathColor(d => d.color)
       .pathStroke(d => d.weight);
 
-    // Auto-rotation
     globe.controls().autoRotate = true;
     globe.controls().autoRotateSpeed = 0.35;
     globe.pointOfView({ lat: 13.75, lng: 100.5, altitude: 1.8 });
@@ -381,7 +371,6 @@
       document.getElementById('stat-spin').className = "font-bold text-slate-400";
     });
 
-    // Real-time Latitude & Longitude Raycasting
     window.addEventListener('mousemove', (event) => {
       const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
@@ -407,18 +396,16 @@
       }
     }
 
-    // 2. Load Tectonic Plates
     async function loadTectonicPlates() {
       try {
         const res = await fetch('https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json');
         tectonicPlatesData = await res.json();
         updateGlobeLayers();
       } catch (err) {
-        console.warn("Failed to load plate boundaries:", err);
+        console.warn("Plates error:", err);
       }
     }
 
-    // 3. Fetch Real-time Earthquakes from USGS
     async function fetchQuakeData() {
       try {
         const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
@@ -429,7 +416,7 @@
         updateStats();
         document.getElementById('last-update-time').innerText = new Date().toLocaleTimeString();
       } catch (err) {
-        console.error("USGS API Error:", err);
+        console.error("USGS error:", err);
       }
     }
 
@@ -479,14 +466,13 @@
     }
 
     function updateStats() {
-      document.getElementById('stat-quake-count').innerText = allQuakes.length + " events";
+      document.getElementById('stat-quake-count').innerText = allQuakes.length;
       if (allQuakes.length > 0) {
         const maxMag = Math.max(...allQuakes.map(q => q.properties.mag || 0));
         document.getElementById('stat-max-mag').innerText = maxMag.toFixed(1) + " M";
       }
     }
 
-    // 4. Fetch Global Weather
     async function loadCitiesAndWeather() {
       const citiesListEl = document.getElementById('cities-panel');
       citiesListEl.innerHTML = '';
@@ -523,19 +509,18 @@
           card.onclick = () => flyToLocation(city.lat, city.lon, 1.4);
           citiesListEl.appendChild(card);
         } catch (e) {
-          console.warn("Weather API Error:", city.name, e);
+          console.warn("Weather error:", city.name, e);
         }
       }
     }
 
-    // 5. Sync Layers cleanly on Globe
     function updateGlobeLayers() {
       const showCountries = document.getElementById('chk-countries').checked;
       const showPlates = document.getElementById('chk-plates').checked;
       const showGraticules = document.getElementById('chk-graticules').checked;
       const showQuakes = document.getElementById('chk-quakes').checked;
 
-      // 5.1 Clean English Country Labels
+      // Pure ASCII text labels (no question marks)
       if (showCountries) {
         const labels = countryLabels.map(c => ({
           lat: c.lat,
@@ -549,7 +534,6 @@
         globe.labelsData([]);
       }
 
-      // 5.2 Seismic Markers & Rings
       const points = [];
       const rings = [];
 
@@ -561,8 +545,8 @@
         });
 
         filtered.forEach(q => {
-          const [lon, lat, depth] = quake.geometry.coordinates;
-          const mag = quake.properties.mag;
+          const [lon, lat, depth] = q.geometry.coordinates;
+          const mag = q.properties.mag;
           const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
           const latT = lat >= 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`;
           const lonT = lon >= 0 ? `${lon.toFixed(2)}°E` : `${Math.abs(lon).toFixed(2)}°W`;
@@ -597,7 +581,6 @@
       globe.pointsData(points);
       globe.ringsData(rings);
 
-      // 5.3 Tectonic Plates & Graticules
       const allPaths = [];
 
       if (showGraticules) {
@@ -621,12 +604,10 @@
       globe.pathsData(allPaths);
     }
 
-    // Camera Navigation
     function flyToLocation(lat, lon, altitude = 1.4) {
       globe.pointOfView({ lat: lat, lng: lon, altitude: altitude }, 1400);
     }
 
-    // Toggle Accordion Panel
     function togglePanel(bodyId, arrowId) {
       const body = document.getElementById(bodyId);
       const arrow = document.getElementById(arrowId);
@@ -671,7 +652,6 @@
       globe.width(window.innerWidth).height(window.innerHeight);
     });
 
-    // Initialize
     loadTectonicPlates();
     fetchQuakeData();
     loadCitiesAndWeather();
