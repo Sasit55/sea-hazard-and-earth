@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global 3D Earth Hazard & Geophysical Monitor</title>
+  <title>ระบบติดตามแผ่นดินไหวและภูมิศาสตร์โลก 3 มิติ</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js & Globe.gl -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/globe.gl@2.32.3/dist/globe.gl.min.js"></script>
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: TH Sarabun New / Sarabun -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -25,8 +25,9 @@
       height: 100vh;
       overflow: hidden;
       background-color: #030712;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Sarabun', sans-serif;
       color: #f1f5f9;
+      font-size: 15px;
     }
     #globe-canvas {
       width: 100vw;
@@ -60,11 +61,11 @@
 </head>
 <body class="relative">
 
-  <!-- 3D Earth Globe Canvas -->
+  <!-- ผืนผ้าใบลูกโลก 3 มิติ -->
   <div id="globe-canvas"></div>
 
-  <!-- Top HUD Bar -->
-  <header class="absolute top-3 left-3 right-3 z-30 flex items-center justify-between glass-hud px-4 py-2.5 rounded-2xl">
+  <!-- แถบด้านบน: สรุปข้อมูลหลัก (Top HUD) ฟอนต์สารบัญ -->
+  <header class="absolute top-3 left-3 right-3 z-30 flex items-center justify-between glass-hud px-4 py-2 rounded-2xl">
     <div class="flex items-center space-x-3">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-rose-500 flex items-center justify-center shadow-md">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,100 +74,100 @@
         </svg>
       </div>
       <div>
-        <h1 class="text-sm font-bold tracking-wide text-white flex items-center gap-2">
-          Global 3D Earth Hazard Monitor
-          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5"></span> USGS Live
+        <h1 class="text-base font-bold tracking-wide text-white flex items-center gap-2">
+          ระบบติดตามแผ่นดินไหว & ภูมิศาสตร์โลก 3 มิติ
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5"></span> ข้อมูลสด USGS
           </span>
         </h1>
-        <p class="text-[11px] text-slate-400">Satellite Imagery • Tectonic Faults • Global Climate</p>
+        <p class="text-xs text-slate-300">ภาพถ่ายดาวเทียม • แนวรอยต่อแผ่นเปลือกโลก • ข้อมูลสภาพอากาศแบบเรียลไทม์</p>
       </div>
     </div>
 
-    <!-- Quick Stats Summary -->
-    <div class="hidden lg:flex items-center space-x-6 text-xs">
-      <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Pointer:</span>
-        <span id="stat-mouse-coords" class="font-mono text-cyan-400 font-bold">Hover on Globe</span>
+    <!-- สถิติย่อบนแถบด้านบน -->
+    <div class="hidden lg:flex items-center space-x-6 text-sm">
+      <div class="flex items-center space-x-1.5">
+        <span class="text-slate-400">พิกัดชี้เมาส์:</span>
+        <span id="stat-mouse-coords" class="font-semibold text-cyan-400">เลื่อนเมาส์บนลูกโลก</span>
       </div>
-      <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Quakes:</span>
-        <span id="stat-quake-count" class="font-bold text-amber-400">--</span>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-slate-400">แผ่นดินไหวรอบโลก:</span>
+        <span id="stat-quake-count" class="font-bold text-amber-400">-- ครั้ง</span>
       </div>
-      <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Max Magnitude:</span>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-slate-400">ขนาดสูงสุด:</span>
         <span id="stat-max-mag" class="font-bold text-rose-400">-- M</span>
       </div>
-      <div class="flex items-center space-x-2">
-        <span class="text-slate-400">Rotation:</span>
-        <span id="stat-spin" class="font-bold text-sky-400">Auto</span>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-slate-400">สถานะลูกโลก:</span>
+        <span id="stat-spin" class="font-semibold text-sky-400">หมุนอัตโนมัติ</span>
       </div>
     </div>
 
-    <!-- Actions -->
+    <!-- ปุ่มคำสั่ง -->
     <div class="flex items-center space-x-2">
       <button onclick="toggleEarthSpin()" id="btn-spin" class="px-3 py-1.5 text-xs rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        <span>Toggle Spin</span>
+        <span>หมุน / หยุดลูกโลก</span>
       </button>
       <button onclick="toggleSidebar()" class="px-3 py-1.5 text-xs rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-        <span>Telemetry</span>
+        <span>รายการข้อมูล</span>
       </button>
       <button onclick="openModal()" class="px-3 py-1.5 text-xs rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-medium shadow-md transition">
-        Portfolio Info
+        ข้อมูลพอร์ตฟอลิโอ
       </button>
     </div>
   </header>
 
-  <!-- Left Sidebar (Collapsible) -->
+  <!-- แถบด้านซ้าย: รายการแผ่นดินไหว & สภาพอากาศ (Sidebar) -->
   <aside id="sidebar" class="absolute top-16 left-3 bottom-3 w-80 z-20 glass-hud rounded-2xl flex flex-col transition-all duration-300 transform translate-x-0">
-    <div class="flex border-b border-slate-800 p-2 gap-1 text-xs">
-      <button id="tab-btn-quakes" onclick="switchTab('quakes')" class="flex-1 py-2 rounded-xl font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 transition text-center">
-        Earthquakes (<span id="tab-count-quake">0</span>)
+    <div class="flex border-b border-slate-800 p-2 gap-1 text-sm">
+      <button id="tab-btn-quakes" onclick="switchTab('quakes')" class="flex-1 py-1.5 rounded-xl font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 transition text-center">
+        แผ่นดินไหวล่าสุด (<span id="tab-count-quake">0</span>)
       </button>
-      <button id="tab-btn-cities" onclick="switchTab('cities')" class="flex-1 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center">
-        Weather
+      <button id="tab-btn-cities" onclick="switchTab('cities')" class="flex-1 py-1.5 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center">
+        สภาพอากาศเมืองหลัก
       </button>
     </div>
 
-    <!-- Filter (Quakes) -->
+    <!-- ตัวกรองขนาดแผ่นดินไหว -->
     <div id="quake-filter-box" class="p-2.5 border-b border-slate-800 space-y-2">
       <div class="flex gap-2">
-        <select id="mag-filter" onchange="filterQuakes()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500">
-          <option value="all">All Magnitudes (M 2.5+)</option>
-          <option value="4.5" selected>Notable Only (M 4.5+)</option>
-          <option value="5.5">Moderate (M 5.5+)</option>
-          <option value="6.5">Major (M 6.5+)</option>
+        <select id="mag-filter" onchange="filterQuakes()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-rose-500">
+          <option value="all">แสดงทุกขนาด (M 2.5 ขึ้นไป)</option>
+          <option value="4.5" selected>มีนัยสำคัญ (M 4.5 ขึ้นไป)</option>
+          <option value="5.5">รุนแรงปานกลาง (M 5.5 ขึ้นไป)</option>
+          <option value="6.5">รุนแรงมาก (M 6.5 ขึ้นไป)</option>
         </select>
-        <button onclick="fetchQuakeData()" title="Refresh USGS Data" class="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300">
+        <button onclick="fetchQuakeData()" title="รีเฟรชข้อมูล" class="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         </button>
       </div>
-      <div class="text-[11px] text-slate-400 flex justify-between">
-        <span>Source: USGS GeoJSON Feed</span>
+      <div class="text-xs text-slate-400 flex justify-between">
+        <span>อัปเดตอัตโนมัติจาก USGS</span>
         <span id="last-update-time">--:--:--</span>
       </div>
     </div>
 
-    <!-- Earthquakes List -->
+    <!-- รายการแผ่นดินไหว -->
     <div id="quakes-panel" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
-      <div class="text-center py-8 text-xs text-slate-400">Loading satellite telemetry...</div>
+      <div class="text-center py-8 text-xs text-slate-400">กำลังเชื่อมต่อข้อมูลดาวเทียม 3 มิติ...</div>
     </div>
 
-    <!-- Weather List -->
+    <!-- รายการเมืองและสภาพอากาศ -->
     <div id="cities-panel" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2 hidden"></div>
   </aside>
 
-  <!-- Right Floating Control Panel (Collapsible) -->
+  <!-- แถบด้านขวา: เปิด-ปิดการแสดงผล & บินลัด (Controls) -->
   <div class="absolute top-16 right-3 z-20 space-y-2.5 text-xs w-64">
     
-    <!-- 1. Display Layers -->
+    <!-- 1. ชั้นข้อมูลที่ต้องการแสดง -->
     <div class="glass-hud rounded-xl overflow-hidden shadow-xl border border-slate-700/60">
       <button onclick="togglePanel('layers-body', 'layers-arrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between bg-slate-900/60 hover:bg-slate-800 transition text-left">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-          <span class="text-xs font-bold text-slate-200">Layer Options</span>
+          <span class="text-xs font-bold text-slate-200">เปิด-ปิด ข้อมูลบนลูกโลก</span>
         </div>
         <svg id="layers-arrow" class="w-3.5 h-3.5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </button>
@@ -174,91 +175,91 @@
       <div id="layers-body" class="p-3 space-y-2.5 transition-all duration-300">
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-countries" checked onchange="updateGlobeLayers()" class="rounded accent-sky-500 w-3.5 h-3.5">
-          <span>Country Labels (Clean English)</span>
+          <span>ป้ายชื่อประเทศ (ภาษาไทย ชัดเจน)</span>
         </label>
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-plates" checked onchange="updateGlobeLayers()" class="rounded accent-orange-500 w-3.5 h-3.5">
-          <span>Tectonic Fault Lines</span>
+          <span>แนวรอยต่อเปลือกโลก (เส้นสีส้ม)</span>
         </label>
         <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
           <input type="checkbox" id="chk-graticules" checked onchange="updateGlobeLayers()" class="rounded accent-indigo-500 w-3.5 h-3.5">
-          <span>Equator & Tropic Lines</span>
+          <span>เส้นศูนย์สูตร & เส้นละติจูด</span>
         </label>
         <div class="pt-1.5 border-t border-slate-800">
           <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
             <input type="checkbox" id="chk-quakes" checked onchange="updateGlobeLayers()" class="rounded accent-rose-500 w-3.5 h-3.5">
-            <span>Earthquake Markers (USGS)</span>
+            <span>แท่งปริซึมแผ่นดินไหว 3D (USGS)</span>
           </label>
         </div>
       </div>
     </div>
 
-    <!-- 2. Region Presets -->
+    <!-- 2. เมนูลัด: บินไปยังจุดสำคัญ -->
     <div class="glass-hud rounded-xl overflow-hidden shadow-xl border border-slate-700/60">
       <button onclick="togglePanel('presets-body', 'presets-arrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between bg-slate-900/60 hover:bg-slate-800 transition text-left">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-          <span class="text-xs font-bold text-slate-200">Region Presets</span>
+          <span class="text-xs font-bold text-slate-200">บินสำรวจภูมิภาคต่างๆ</span>
         </div>
         <svg id="presets-arrow" class="w-3.5 h-3.5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </button>
 
       <div id="presets-body" class="p-2 space-y-1 transition-all duration-300">
         <button onclick="flyToLocation(13.75, 100.5, 1.4)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇹🇭 Southeast Asia</span>
-          <span class="text-[10px] text-cyan-400">13.8°N, 100.5°E</span>
+          <span>🇹🇭 ประเทศไทย & อาเซียน</span>
+          <span class="text-[11px] text-cyan-400">13.8°N, 100.5°E</span>
         </button>
         <button onclick="flyToLocation(-6.2, 106.8, 1.5)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇮🇩 Indonesia Arc</span>
-          <span class="text-[10px] text-cyan-400">6.2°S, 106.8°E</span>
+          <span>🇮🇩 อินโดนีเซีย (แนวเสี่ยงภัย)</span>
+          <span class="text-[11px] text-cyan-400">6.2°S, 106.8°E</span>
         </button>
         <button onclick="flyToLocation(35.68, 139.69, 1.4)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🇯🇵 Japan Arc</span>
-          <span class="text-[10px] text-cyan-400">35.7°N, 139.7°E</span>
+          <span>🇯🇵 ญี่ปุ่น (วงแหวนแห่งไฟ)</span>
+          <span class="text-[11px] text-cyan-400">35.7°N, 139.7°E</span>
         </button>
         <button onclick="flyToLocation(10.0, 110.0, 2.3)" class="w-full text-left px-2.5 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-xs text-slate-200 flex items-center justify-between transition">
-          <span>🌐 Global Orbit View</span>
-          <span class="text-[10px] text-sky-400">Orbit</span>
+          <span>🌐 มุมมองอวกาศรอบโลก</span>
+          <span class="text-[11px] text-sky-400">ภาพรวมโลก</span>
         </button>
       </div>
     </div>
 
-    <!-- Mouse Controls Info -->
-    <div class="glass-hud p-3 rounded-xl border border-slate-700/60 text-[11px] text-slate-400 space-y-1">
+    <!-- แนะนำวิธีใช้งานเมาส์ -->
+    <div class="glass-hud p-3 rounded-xl border border-slate-700/60 text-xs text-slate-300 space-y-1">
       <div class="font-bold text-slate-200 flex items-center gap-1">
-        <span>Controls:</span>
+        <span>วิธีควบคุมลูกโลก:</span>
       </div>
-      <div>• <b>Left-Click Drag:</b> Rotate 360°</div>
-      <div>• <b>Scroll Wheel:</b> Zoom in & out</div>
-      <div>• <b>Hover Pointer:</b> Live Lat / Lon readout</div>
+      <div>• <b>คลิกซ้ายแล้วลาก:</b> หมุนลูกโลก 360 องศา</div>
+      <div>• <b>หมุนลูกกลิ้งเมาส์:</b> ซูมเข้าและซูมออก</div>
+      <div>• <b>ชี้เมาส์บนผิวโลก:</b> แสดงพิกัดละติจูด/ลองจิจูดสด</div>
     </div>
 
   </div>
 
-  <!-- Portfolio Modal -->
+  <!-- หน้าต่างรายละเอียดโครงงาน (Portfolio Modal) -->
   <div id="portfolio-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="glass-hud max-w-xl w-full rounded-2xl p-6 relative border border-slate-700/80">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">&times;</button>
       <div class="flex items-center space-x-3 mb-4">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-rose-500 flex items-center justify-center font-bold text-white shadow-lg">TCAS</div>
         <div>
-          <h2 class="text-base font-bold text-white">Global 3D Earth Hazard Monitor</h2>
-          <p class="text-xs text-slate-400">Real-Time Geoinformatics & Seismic Analysis Web App</p>
+          <h2 class="text-base font-bold text-white">โครงงาน: ระบบเฝ้าระวังแผ่นดินไหวและภูมิศาสตร์โลก 3 มิติ</h2>
+          <p class="text-xs text-slate-400">Global 3D Earth Hazard & Geographic Telemetry System</p>
         </div>
       </div>
       <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
-        <p><strong class="text-white">Project Overview:</strong> An interactive 3D virtual globe engineered with WebGL to simulate planetary geophysics, tectonic plate dynamics, and real-time natural hazards. Directly integrated with open scientific APIs to provide live telemetry without requiring backend server infrastructure.</p>
+        <p><strong class="text-white">แนวคิดและที่มา:</strong> เว็บแอปพลิเคชันนี้ถูกพัฒนาขึ้นเพื่อใช้เป็นเครื่องมือจำลองลูกโลกเสมือนจริง 3 มิติ (Virtual Globe) ผสานการแสดงผลข้อมูลทางภูมิศาสตร์ พิกัดละติจูด/ลองจิจูด แนวรอยต่อเปลือกโลก และเชื่อมโยงข้อมูลเหตุการณ์แผ่นดินไหวแบบเรียลไทม์จาก USGS และสภาพอากาศจาก Open-Meteo REST API</p>
         <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800 space-y-1.5">
-          <div class="font-bold text-sky-400">Core Technologies:</div>
-          <div>• <strong>3D Engine:</strong> Three.js & Globe.gl WebGL Rendering</div>
-          <div>• <strong>Live Seismic Feed:</strong> USGS Real-time GeoJSON API</div>
-          <div>• <strong>Weather Data:</strong> Open-Meteo REST API</div>
-          <div>• <strong>Plate Boundaries:</strong> PB2002 Global Plate Boundary Dataset</div>
+          <div class="font-bold text-sky-400">เทคโนโลยีและแหล่งข้อมูลหลัก (Tech Stack):</div>
+          <div>• <strong>กราฟิก 3 มิติ:</strong> Three.js & Globe.gl WebGL Rendering</div>
+          <div>• <strong>ข้อมูลแผ่นดินไหวสด:</strong> USGS Earthquake Real-time Feed (ฟรี 100%)</div>
+          <div>• <strong>ข้อมูลสภาพอากาศ:</strong> Open-Meteo REST API</div>
+          <div>• <strong>แนวแผ่นเปลือกโลก:</strong> PB2002 Global Plate Boundaries</div>
         </div>
-        <p class="text-slate-400">Designed for university admission portfolios in Computer Science, Software Engineering, and Geoinformatics.</p>
+        <p class="text-slate-400">จัดทำเพื่อเป็นผลงานสำหรับใส่แฟ้มสะสมผลงาน (Portfolio) ในการยื่นเข้าศึกษาต่อระดับอุดมศึกษา</p>
       </div>
       <div class="mt-6 flex justify-end">
-        <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200">Close</button>
+        <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200">ปิดหน้าต่าง</button>
       </div>
     </div>
   </div>
@@ -270,43 +271,47 @@
     let weatherData = [];
     let tectonicPlatesData = null;
 
-    // Clean English Labels (Pure ASCII - No ????? error)
+    // รายชื่อประเทศหลัก (เฉพาะชื่อภาษาไทยที่อ่านง่าย ชัดเจน ไม่รกตา)
     const countryLabels = [
-      { name: "THAILAND", lat: 15.87, lon: 100.99, size: 0.9, color: '#38bdf8' },
-      { name: "MYANMAR", lat: 21.91, lon: 95.95, size: 0.8, color: '#f1f5f9' },
-      { name: "LAOS", lat: 19.85, lon: 102.49, size: 0.75, color: '#f1f5f9' },
-      { name: "CAMBODIA", lat: 12.56, lon: 104.99, size: 0.75, color: '#f1f5f9' },
-      { name: "VIETNAM", lat: 14.05, lon: 108.27, size: 0.8, color: '#f1f5f9' },
-      { name: "MALAYSIA", lat: 4.21, lon: 101.97, size: 0.8, color: '#f1f5f9' },
-      { name: "SINGAPORE", lat: 1.35, lon: 103.81, size: 0.75, color: '#38bdf8' },
-      { name: "INDONESIA", lat: -0.78, lon: 113.92, size: 0.9, color: '#f1f5f9' },
-      { name: "PHILIPPINES", lat: 12.87, lon: 121.77, size: 0.85, color: '#f1f5f9' },
-      { name: "JAPAN", lat: 36.20, lon: 138.25, size: 0.9, color: '#f1f5f9' },
-      { name: "CHINA", lat: 35.86, lon: 104.19, size: 1.0, color: '#f1f5f9' },
-      { name: "INDIA", lat: 20.59, lon: 78.96, size: 0.95, color: '#f1f5f9' },
-      { name: "AUSTRALIA", lat: -25.27, lon: 133.77, size: 0.95, color: '#f1f5f9' },
-      { name: "UNITED STATES", lat: 37.09, lon: -95.71, size: 0.95, color: '#f1f5f9' }
+      { name: "ไทย", lat: 15.87, lon: 100.99, size: 0.85, color: '#38bdf8' },
+      { name: "เมียนมา", lat: 21.91, lon: 95.95, size: 0.75, color: '#f1f5f9' },
+      { name: "ลาว", lat: 19.85, lon: 102.49, size: 0.75, color: '#f1f5f9' },
+      { name: "กัมพูชา", lat: 12.56, lon: 104.99, size: 0.75, color: '#f1f5f9' },
+      { name: "เวียดนาม", lat: 14.05, lon: 108.27, size: 0.75, color: '#f1f5f9' },
+      { name: "มาเลเซีย", lat: 4.21, lon: 101.97, size: 0.75, color: '#f1f5f9' },
+      { name: "สิงคโปร์", lat: 1.35, lon: 103.81, size: 0.7, color: '#38bdf8' },
+      { name: "อินโดนีเซีย", lat: -0.78, lon: 113.92, size: 0.85, color: '#f1f5f9' },
+      { name: "ฟิลิปปินส์", lat: 12.87, lon: 121.77, size: 0.8, color: '#f1f5f9' },
+      { name: "ญี่ปุ่น", lat: 36.20, lon: 138.25, size: 0.85, color: '#f1f5f9' },
+      { name: "จีน", lat: 35.86, lon: 104.19, size: 0.95, color: '#f1f5f9' },
+      { name: "อินเดีย", lat: 20.59, lon: 78.96, size: 0.9, color: '#f1f5f9' },
+      { name: "ออสเตรเลีย", lat: -25.27, lon: 133.77, size: 0.9, color: '#f1f5f9' },
+      { name: "สหรัฐอเมริกา", lat: 37.09, lon: -95.71, size: 0.9, color: '#f1f5f9' }
     ];
 
+    // ข้อมูลเมืองสำคัญสำหรับแสดงสภาพอากาศ
     const citiesList = [
-      { name: "Bangkok", country: "Thailand", lat: 13.75, lon: 100.51 },
-      { name: "Jakarta", country: "Indonesia", lat: -6.20, lon: 106.84 },
-      { name: "Kuala Lumpur", country: "Malaysia", lat: 3.13, lon: 101.68 },
-      { name: "Singapore", country: "Singapore", lat: 1.35, lon: 103.81 },
-      { name: "Manila", country: "Philippines", lat: 14.59, lon: 120.98 },
-      { name: "Hanoi", country: "Vietnam", lat: 21.02, lon: 105.83 },
-      { name: "Tokyo", country: "Japan", lat: 35.67, lon: 139.65 },
-      { name: "Beijing", country: "China", lat: 39.90, lon: 116.40 },
-      { name: "London", country: "United Kingdom", lat: 51.50, lon: -0.12 },
-      { name: "New York", country: "United States", lat: 40.71, lon: -74.00 }
+      { name: "กรุงเทพมหานคร", country: "ไทย", lat: 13.75, lon: 100.51 },
+      { name: "เชียงใหม่", country: "ไทย", lat: 18.79, lon: 98.98 },
+      { name: "ภูเก็ต", country: "ไทย", lat: 7.88, lon: 98.39 },
+      { name: "จาการ์ตา", country: "อินโดนีเซีย", lat: -6.20, lon: 106.84 },
+      { name: "กัวลาลัมเปอร์", country: "มาเลเซีย", lat: 3.13, lon: 101.68 },
+      { name: "สิงคโปร์", country: "สิงคโปร์", lat: 1.35, lon: 103.81 },
+      { name: "มะนิลา", country: "ฟิลิปปินส์", lat: 14.59, lon: 120.98 },
+      { name: "ฮานอย", country: "เวียดนาม", lat: 21.02, lon: 105.83 },
+      { name: "โตเกียว", country: "ญี่ปุ่น", lat: 35.67, lon: 139.65 },
+      { name: "ปักกิ่ง", country: "จีน", lat: 39.90, lon: 116.40 },
+      { name: "ลอนดอน", country: "สหราชอาณาจักร", lat: 51.50, lon: -0.12 },
+      { name: "นิวยอร์ก", country: "สหรัฐฯ", lat: 40.71, lon: -74.00 }
     ];
 
+    // สร้างเส้นโครงข่ายภูมิศาสตร์ (เส้นศูนย์สูตร และเส้นทรอปิก)
     function generateGraticules() {
       const paths = [];
       const parallels = [
-        { lat: 0, name: "Equator (0°)", color: 'rgba(234, 179, 8, 0.7)', weight: 2 },
-        { lat: 23.44, name: "Tropic of Cancer (23.4°N)", color: 'rgba(56, 189, 248, 0.4)', weight: 1 },
-        { lat: -23.44, name: "Tropic of Capricorn (23.4°S)", color: 'rgba(56, 189, 248, 0.4)', weight: 1 }
+        { lat: 0, name: "เส้นศูนย์สูตร (0°)", color: 'rgba(234, 179, 8, 0.7)', weight: 2 },
+        { lat: 23.44, name: "ทรอปิกออฟแคนเซอร์ (23.4°N)", color: 'rgba(56, 189, 248, 0.4)', weight: 1 },
+        { lat: -23.44, name: "ทรอปิกออฟแคปริคอร์น (23.4°S)", color: 'rgba(56, 189, 248, 0.4)', weight: 1 }
       ];
 
       parallels.forEach(p => {
@@ -314,7 +319,7 @@
         for (let lng = -180; lng <= 180; lng += 4) {
           coords.push([p.lat, lng]);
         }
-        paths.push({ coords, color: p.color, weight: p.weight });
+        paths.push({ coords, color: p.color, weight: p.weight, name: p.name });
       });
 
       return paths;
@@ -322,7 +327,7 @@
 
     const graticuleLines = generateGraticules();
 
-    // 1. Initialize 3D Globe with Clean Labels
+    // 1. เริ่มต้น Globe.gl พร้อมพื้นผิวดาวเทียมสว่างคมชัด
     globe = Globe()(globeContainer)
       .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
@@ -330,7 +335,7 @@
       .showAtmosphere(true)
       .atmosphereColor('#38bdf8')
       .atmosphereAltitude(0.18)
-      // Labels (Guaranteed Clean Text)
+      // ป้ายชื่อข้อความ 3 มิติ
       .labelsData([])
       .labelText(d => d.text)
       .labelSize(d => d.size)
@@ -341,7 +346,7 @@
       .labelLng(d => d.lon)
       .labelResolution(3)
       .onLabelClick(d => flyToLocation(d.lat, d.lon, 1.4))
-      // Quake Points
+      // จุดและแท่งปริซึมแผ่นดินไหว 3D (ปรับให้ขนาดเล็กลง กะทัดรัด ไม่บดบังโลก)
       .pointsData([])
       .pointLat(d => d.lat)
       .pointLng(d => d.lon)
@@ -350,27 +355,29 @@
       .pointRadius(d => d.radius)
       .pointLabel(d => d.label)
       .onPointClick(d => flyToLocation(d.lat, d.lon, 1.4))
-      // Shockwave Rings
+      // วงแหวนคลื่นแผ่นดินไหว
       .ringsData([])
       .ringColor(d => d.color)
       .ringMaxRadius(d => d.maxR)
       .ringPropagationSpeed(1.5)
       .ringRepeatPeriod(1000)
-      // Paths
+      // เส้นภูมิศาสตร์ & รอยต่อเปลือกโลก
       .pathsData([])
       .pathPoints(d => d.coords)
       .pathColor(d => d.color)
       .pathStroke(d => d.weight);
 
+    // การหมุนลูกโลกอัตโนมัติ
     globe.controls().autoRotate = true;
     globe.controls().autoRotateSpeed = 0.35;
     globe.pointOfView({ lat: 13.75, lng: 100.5, altitude: 1.8 });
 
     globe.controls().addEventListener('start', () => {
-      document.getElementById('stat-spin').innerText = "Manual";
-      document.getElementById('stat-spin').className = "font-bold text-slate-400";
+      document.getElementById('stat-spin').innerText = "หยุดหมุน (แมนนวล)";
+      document.getElementById('stat-spin').className = "font-semibold text-slate-400";
     });
 
+    // ตรวจจับพิกัดละติจูด/ลองจิจูดแบบสด เมื่อเลื่อนเมาส์บนลูกโลก
     window.addEventListener('mousemove', (event) => {
       const mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
@@ -378,8 +385,8 @@
       );
       const coords = globe.toGlobeCoords(mouse.x, mouse.y);
       if (coords) {
-        const latT = coords.lat >= 0 ? `${coords.lat.toFixed(2)}° N` : `${Math.abs(coords.lat).toFixed(2)}° S`;
-        const lonT = coords.lng >= 0 ? `${coords.lng.toFixed(2)}° E` : `${Math.abs(coords.lng).toFixed(2)}° W`;
+        const latT = coords.lat >= 0 ? `${coords.lat.toFixed(2)}° เหนือ` : `${Math.abs(coords.lat).toFixed(2)}° ใต้`;
+        const lonT = coords.lng >= 0 ? `${coords.lng.toFixed(2)}° ตะวันออก` : `${Math.abs(coords.lng).toFixed(2)}° ตะวันตก`;
         document.getElementById('stat-mouse-coords').innerText = `${latT}, ${lonT}`;
       }
     });
@@ -388,24 +395,26 @@
       globe.controls().autoRotate = !globe.controls().autoRotate;
       const spinText = document.getElementById('stat-spin');
       if (globe.controls().autoRotate) {
-        spinText.innerText = "Auto";
-        spinText.className = "font-bold text-sky-400";
+        spinText.innerText = "หมุนอัตโนมัติ";
+        spinText.className = "font-semibold text-sky-400";
       } else {
-        spinText.innerText = "Paused";
-        spinText.className = "font-bold text-slate-400";
+        spinText.innerText = "หยุดหมุน";
+        spinText.className = "font-semibold text-slate-400";
       }
     }
 
+    // 2. โหลดแนวรอยต่อแผ่นเปลือกโลก
     async function loadTectonicPlates() {
       try {
         const res = await fetch('https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json');
         tectonicPlatesData = await res.json();
         updateGlobeLayers();
       } catch (err) {
-        console.warn("Plates error:", err);
+        console.warn("โหลดรอยต่อเปลือกโลกไม่สำเร็จ:", err);
       }
     }
 
+    // 3. ดึงข้อมูลแผ่นดินไหวจาก USGS
     async function fetchQuakeData() {
       try {
         const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
@@ -414,9 +423,9 @@
         renderQuakesList();
         updateGlobeLayers();
         updateStats();
-        document.getElementById('last-update-time').innerText = new Date().toLocaleTimeString();
+        document.getElementById('last-update-time').innerText = new Date().toLocaleTimeString('th-TH');
       } catch (err) {
-        console.error("USGS error:", err);
+        console.error("USGS Error:", err);
       }
     }
 
@@ -436,7 +445,7 @@
         const [lon, lat, depth] = quake.geometry.coordinates;
         const mag = quake.properties.mag;
         const place = quake.properties.place;
-        const time = new Date(quake.properties.time).toLocaleTimeString();
+        const time = new Date(quake.properties.time).toLocaleTimeString('th-TH');
         const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
 
         const latT = lat >= 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`;
@@ -451,7 +460,7 @@
             </span>
             <div>
               <div class="text-xs font-semibold text-slate-200 line-clamp-1">${place}</div>
-              <div class="text-[11px] text-slate-400 font-mono">${latT}, ${lonT} • Depth ${depth} km • ${time}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${latT}, ${lonT} • ลึก ${depth} กม. • ${time}</div>
             </div>
           </div>
         `;
@@ -466,13 +475,14 @@
     }
 
     function updateStats() {
-      document.getElementById('stat-quake-count').innerText = allQuakes.length;
+      document.getElementById('stat-quake-count').innerText = allQuakes.length + " ครั้ง";
       if (allQuakes.length > 0) {
         const maxMag = Math.max(...allQuakes.map(q => q.properties.mag || 0));
         document.getElementById('stat-max-mag').innerText = maxMag.toFixed(1) + " M";
       }
     }
 
+    // 4. ดึงข้อมูลสภาพอากาศของเมืองหลัก
     async function loadCitiesAndWeather() {
       const citiesListEl = document.getElementById('cities-panel');
       citiesListEl.innerHTML = '';
@@ -500,27 +510,28 @@
           card.className = 'p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition flex items-center justify-between';
           card.innerHTML = `
             <div>
-              <div class="text-xs font-semibold text-slate-200">${city.name}, ${city.country}</div>
+              <div class="text-xs font-semibold text-slate-200">${city.name} (${city.country})</div>
               <div class="text-[11px] text-slate-400 font-mono">${latT}, ${lonT}</div>
-              <div class="text-[11px] text-cyan-400">Wind: ${cur.windspeed} km/h</div>
+              <div class="text-[11px] text-cyan-400">ความเร็วลม ${cur.windspeed} กม./ชม.</div>
             </div>
             <div class="text-sm font-bold text-cyan-300 font-mono">${cur.temperature}°C</div>
           `;
           card.onclick = () => flyToLocation(city.lat, city.lon, 1.4);
           citiesListEl.appendChild(card);
         } catch (e) {
-          console.warn("Weather error:", city.name, e);
+          console.warn("Weather API Error:", city.name, e);
         }
       }
     }
 
+    // 5. จัดระเบียบการแสดงผลเลเยอร์ทั้งหมดบนลูกโลก
     function updateGlobeLayers() {
       const showCountries = document.getElementById('chk-countries').checked;
       const showPlates = document.getElementById('chk-plates').checked;
       const showGraticules = document.getElementById('chk-graticules').checked;
       const showQuakes = document.getElementById('chk-quakes').checked;
 
-      // Pure ASCII text labels (no question marks)
+      // 5.1 ป้ายชื่อประเทศ (ฟอนต์สารบัญ สะอาดตา)
       if (showCountries) {
         const labels = countryLabels.map(c => ({
           lat: c.lat,
@@ -534,6 +545,7 @@
         globe.labelsData([]);
       }
 
+      // 5.2 หมุดและแท่งปริซึมแผ่นดินไหว (ย่อขนาดให้เล็กลง ไม่บวม ไม่เกะกะ)
       const points = [];
       const rings = [];
 
@@ -545,24 +557,25 @@
         });
 
         filtered.forEach(q => {
-          const [lon, lat, depth] = q.geometry.coordinates;
-          const mag = q.properties.mag;
+          const [lon, lat, depth] = quake.geometry.coordinates;
+          const mag = quake.properties.mag;
           const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
           const latT = lat >= 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`;
           const lonT = lon >= 0 ? `${lon.toFixed(2)}°E` : `${Math.abs(lon).toFixed(2)}°W`;
 
+          // ปรับความสูง (alt) และรัศมี (radius) ให้เล็กลงแบบพอดี
           points.push({
             lat: lat,
             lon: lon,
-            alt: Math.min(mag * 0.025, 0.18),
-            radius: Math.max(mag * 0.28, 0.8),
+            alt: Math.min(mag * 0.012, 0.08), // ความสูงปริซึมลดลงมา เพื่อความเรียบร้อย
+            radius: Math.max(mag * 0.16, 0.45), // รัศมีหัวหมุดลดลง
             color: color,
             label: `
-              <div style="background: rgba(15, 23, 42, 0.95); padding: 8px 12px; border-radius: 10px; color: #fff; font-family: 'Inter', sans-serif; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 230px;">
-                <div style="color: ${color}; font-weight: bold; font-size: 13px; margin-bottom: 2px;">Magnitude M ${mag.toFixed(1)}</div>
-                <div style="font-size: 11px; color: #e2e8f0;"><b>Location:</b> ${q.properties.place}</div>
-                <div style="font-size: 11px; color: #38bdf8; font-family: monospace; margin-top: 2px;"><b>Coords:</b> ${latT}, ${lonT}</div>
-                <div style="font-size: 11px; color: #94a3b8;"><b>Depth:</b> ${depth} km</div>
+              <div style="background: rgba(15, 23, 42, 0.95); padding: 8px 12px; border-radius: 10px; color: #fff; font-family: 'Sarabun', sans-serif; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 230px;">
+                <div style="color: ${color}; font-weight: bold; font-size: 13px; margin-bottom: 2px;">ขนาด M ${mag.toFixed(1)} แมกนิจูด</div>
+                <div style="font-size: 11px; color: #e2e8f0;"><b>สถานที่:</b> ${q.properties.place}</div>
+                <div style="font-size: 11px; color: #38bdf8; font-family: monospace; margin-top: 2px;"><b>พิกัด:</b> ${latT}, ${lonT}</div>
+                <div style="font-size: 11px; color: #94a3b8;"><b>ความลึก:</b> ${depth} กิโลเมตร</div>
               </div>
             `
           });
@@ -571,7 +584,7 @@
             rings.push({
               lat: lat,
               lon: lon,
-              maxR: mag * 1.6,
+              maxR: mag * 1.2,
               color: t => `rgba(${mag >= 6 ? '239, 68, 68' : '245, 158, 11'}, ${Math.sqrt(1 - t)})`
             });
           }
@@ -581,6 +594,7 @@
       globe.pointsData(points);
       globe.ringsData(rings);
 
+      // 5.3 เส้นรอยต่อเปลือกโลก และเส้นศูนย์สูตร
       const allPaths = [];
 
       if (showGraticules) {
@@ -604,10 +618,12 @@
       globe.pathsData(allPaths);
     }
 
+    // ฟังก์ชันบินสำรวจ
     function flyToLocation(lat, lon, altitude = 1.4) {
       globe.pointOfView({ lat: lat, lng: lon, altitude: altitude }, 1400);
     }
 
+    // เปิด-ปิด เมนู
     function togglePanel(bodyId, arrowId) {
       const body = document.getElementById(bodyId);
       const arrow = document.getElementById(arrowId);
@@ -630,14 +646,14 @@
         document.getElementById('quakes-panel').classList.remove('hidden');
         document.getElementById('cities-panel').classList.add('hidden');
         document.getElementById('quake-filter-box').classList.remove('hidden');
-        document.getElementById('tab-btn-quakes').className = "flex-1 py-2 rounded-xl font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 transition text-center";
-        document.getElementById('tab-btn-cities').className = "flex-1 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center";
+        document.getElementById('tab-btn-quakes').className = "flex-1 py-1.5 rounded-xl font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 transition text-center";
+        document.getElementById('tab-btn-cities').className = "flex-1 py-1.5 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center";
       } else {
         document.getElementById('quakes-panel').classList.add('hidden');
         document.getElementById('cities-panel').classList.remove('hidden');
         document.getElementById('quake-filter-box').classList.add('hidden');
-        document.getElementById('tab-btn-cities').className = "flex-1 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition text-center";
-        document.getElementById('tab-btn-quakes').className = "flex-1 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center";
+        document.getElementById('tab-btn-cities').className = "flex-1 py-1.5 rounded-xl font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition text-center";
+        document.getElementById('tab-btn-quakes').className = "flex-1 py-1.5 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition text-center";
       }
     }
 
@@ -652,6 +668,7 @@
       globe.width(window.innerWidth).height(window.innerHeight);
     });
 
+    // เริ่มต้นระบบ
     loadTectonicPlates();
     fetchQuakeData();
     loadCitiesAndWeather();
