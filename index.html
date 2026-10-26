@@ -89,7 +89,7 @@
   <!-- 2. ผืนผ้าใบแสดงผล 2D Leaflet Map -->
   <div id="map-canvas" class="hidden"></div>
 
-  <!-- แถบด้านบน: Top HUD ยุบกระชับอัตโนมัติบนมือถือ -->
+  <!-- แถบด้านบน: Top HUD -->
   <header class="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-30 flex items-center justify-between glass-hud px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl">
     <div class="flex items-center space-x-2 sm:space-x-3">
       <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-rose-500 flex items-center justify-center shadow-md flex-shrink-0">
@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <!-- สถิติย่อบนแถบด้านบน (แสดงบนจอใหญ่) -->
+    <!-- สถิติย่อบนแถบด้านบน -->
     <div class="hidden lg:flex items-center space-x-5 text-xs">
       <div class="flex items-center space-x-1.5 font-sans">
         <span class="text-slate-400">Pointer:</span>
@@ -137,13 +137,13 @@
         <span id="spin-btn-text" class="hidden sm:inline">Toggle Spin</span>
       </button>
 
-      <!-- ปุ่มเปิดรายการแผ่นดินไหว/สภาพอากาศ (ฝั่งซ้าย) -->
+      <!-- ปุ่มเปิดรายการแผ่นดินไหว/สภาพอากาศ -->
       <button onclick="toggleDrawer('sidebar')" class="px-2 py-1 sm:px-2.5 sm:py-1.5 text-[11px] sm:text-xs rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1 font-sans">
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
         <span>Telemetry</span>
       </button>
 
-      <!-- ปุ่มเปิดแผงตั้งค่าและเลเยอร์ (ฝั่งขวา) สำหรับมือถือและจอคอม -->
+      <!-- ปุ่มเปิดแผงตั้งค่าและเลเยอร์ -->
       <button onclick="toggleDrawer('right-panel')" class="px-2 py-1 sm:px-2.5 sm:py-1.5 text-[11px] sm:text-xs rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-600/50 transition flex items-center gap-1 font-sans">
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
         <span>เมนู & เลเยอร์</span>
@@ -156,7 +156,7 @@
     </div>
   </header>
 
-  <!-- แผงด้านซ้าย: รายการแผ่นดินไหว & สภาพอากาศ (Drawer ซ่อนเป็นค่าเริ่มต้นบนมือถือ) -->
+  <!-- แผงด้านซ้าย: รายการแผ่นดินไหว & สภาพอากาศ -->
   <aside id="sidebar" class="absolute top-14 sm:top-16 left-2 sm:left-3 bottom-2 sm:bottom-3 w-[88vw] max-w-xs sm:w-80 z-40 glass-drawer rounded-2xl flex flex-col transition-all duration-300 transform -translate-x-[110%] sm:translate-x-0">
     <div class="flex items-center justify-between border-b border-slate-800 p-2 text-sm font-sans">
       <div class="flex flex-1 gap-1">
@@ -201,7 +201,7 @@
     <div id="cities-panel" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1.5 hidden"></div>
   </aside>
 
-  <!-- แผงด้านขวา: เลเยอร์ & สลับ 2D/3D (Drawer พับเก็บไม่รกหน้าจอบนมือถือ) -->
+  <!-- แผงด้านขวา: เลเยอร์ & สลับ 2D/3D -->
   <div id="right-panel" class="absolute top-14 sm:top-16 right-2 sm:right-3 bottom-2 sm:bottom-auto w-[88vw] max-w-xs sm:w-64 z-40 glass-drawer rounded-2xl flex flex-col transition-all duration-300 transform translate-x-[110%] sm:translate-x-0 overflow-y-auto custom-scrollbar p-2.5 space-y-2 max-h-[85vh]">
     
     <!-- ปุ่มปิดแผงขวาบนมือถือ -->
@@ -542,6 +542,12 @@
       }
     }
 
+    // ฟังก์ชันแปลงเวลาให้อ่านง่าย เช่น 16:20 หรือ 09:05
+    function formatEventTime(timestamp) {
+      const d = new Date(timestamp);
+      return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
     // 4. ดึงข้อมูลแผ่นดินไหวจาก USGS
     async function fetchQuakeData() {
       try {
@@ -551,7 +557,7 @@
         renderQuakesList();
         updateAllLayers();
         updateStats();
-        document.getElementById('last-update-time').innerText = new Date().toLocaleTimeString('en-US');
+        document.getElementById('last-update-time').innerText = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
       } catch (err) {
         console.error("USGS Error:", err);
       }
@@ -573,7 +579,7 @@
         const [lon, lat, depth] = quake.geometry.coordinates;
         const mag = quake.properties.mag;
         const place = quake.properties.place;
-        const time = new Date(quake.properties.time).toLocaleTimeString('en-US');
+        const eventTime = formatEventTime(quake.properties.time);
         const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
 
         const latT = lat >= 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`;
@@ -583,12 +589,16 @@
         item.className = 'p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition flex items-center justify-between font-sans';
         item.innerHTML = `
           <div class="flex items-center space-x-2">
-            <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs" style="background-color: ${color}25; color: ${color}; border: 1px solid ${color}60">
+            <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0" style="background-color: ${color}25; color: ${color}; border: 1px solid ${color}60">
               ${mag.toFixed(1)}
             </span>
-            <div>
-              <div class="text-xs font-semibold text-slate-200 line-clamp-1">${place}</div>
-              <div class="text-[10px] text-slate-400 font-mono">${latT}, ${lonT} • Depth ${depth} km</div>
+            <div class="overflow-hidden">
+              <div class="text-xs font-semibold text-slate-200 truncate">${place}</div>
+              <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1.5 flex-wrap">
+                <span>${latT}, ${lonT}</span>
+                <span>• ลึก ${depth} km</span>
+                <span class="text-amber-300 font-bold bg-amber-500/20 px-1 py-0.2 rounded border border-amber-500/30">🕒 ${eventTime} น.</span>
+              </div>
             </div>
           </div>
         `;
@@ -704,6 +714,7 @@
         filtered.forEach(q => {
           const [lon, lat, depth] = q.geometry.coordinates;
           const mag = q.properties.mag;
+          const eventTime = formatEventTime(q.properties.time);
           const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
           const latT = lat >= 0 ? `${lat.toFixed(2)}°N` : `${Math.abs(lat).toFixed(2)}°S`;
           const lonT = lon >= 0 ? `${lon.toFixed(2)}°E` : `${Math.abs(lon).toFixed(2)}°W`;
@@ -720,6 +731,7 @@
                 <div style="font-size: 11px; color: #e2e8f0;"><b>สถานที่:</b> ${q.properties.place}</div>
                 <div style="font-size: 11px; color: #38bdf8; font-family: monospace; margin-top: 2px;"><b>พิกัด:</b> ${latT}, ${lonT}</div>
                 <div style="font-size: 11px; color: #94a3b8;"><b>ความลึก:</b> ${depth} กิโลเมตร</div>
+                <div style="font-size: 11px; color: #fcd34d; margin-top: 2px;"><b>เวลาที่เกิด:</b> ${eventTime} น.</div>
               </div>
             `
           });
@@ -790,8 +802,9 @@
         });
 
         filtered.forEach(q => {
-          const [lon, lat, depth] = quake.geometry.coordinates;
-          const mag = quake.properties.mag;
+          const [lon, lat, depth] = q.geometry.coordinates;
+          const mag = q.properties.mag;
+          const eventTime = formatEventTime(q.properties.time);
           const color = mag >= 6.5 ? '#ef4444' : (mag >= 5.0 ? '#f59e0b' : '#38bdf8');
           const radius = Math.max(mag * 2.8, 5);
 
@@ -806,7 +819,8 @@
               <b style="color: ${color}; font-size: 13px;">M ${mag.toFixed(1)} Magnitude</b><br>
               <b>สถานที่:</b> ${q.properties.place}<br>
               <b>ความลึก:</b> ${depth} กม.<br>
-              <b>พิกัด:</b> ${lat.toFixed(2)}°, ${lon.toFixed(2)}°
+              <b>พิกัด:</b> ${lat.toFixed(2)}°, ${lon.toFixed(2)}°<br>
+              <b>เวลาที่เกิด:</b> <span style="color: #fcd34d; font-weight: bold;">${eventTime} น.</span>
             </div>
           `).addTo(quakes2DLayerGroup);
         });
